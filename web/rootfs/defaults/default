@@ -1,8 +1,16 @@
 server {
+	{{ if .Env.ENABLE_TURN | default "0" | toBool }}
+	listen 8000 default_server;
+	{{ else }}
 	listen 80 default_server;
-	
+	{{ end }}
+
 	{{ if .Env.ENABLE_IPV6 | default "1" | toBool }}
+	{{ if .Env.ENABLE_TURN | default "0" | toBool }}
+	listen [::]:8000 default_server;
+	{{ else }}
 	listen [::]:80 default_server;
+	{{ end }}
 	{{ end }}
 
 	{{ if .Env.ENABLE_HTTP_REDIRECT | default "0" | toBool }}
@@ -14,13 +22,24 @@ server {
 
 {{ if not (.Env.DISABLE_HTTPS | default "0" | toBool) }}
 server {
+	{{ if .Env.ENABLE_TURN | default "0" | toBool }}
+	listen 4444 ssl http2;
+	{{ else }}
 	listen 443 ssl http2;
+	{{ end }}
 	
 	{{ if .Env.ENABLE_IPV6 | default "1" | toBool }}
+	{{ if .Env.ENABLE_TURN | default "0" | toBool }}
+	listen [::]:4444 ssl http2;
+	{{ else }}
 	listen [::]:443 ssl http2;
+	{{ end }}
 	{{ end }}
 
 	include /config/nginx/ssl.conf;
 	include /config/nginx/meet.conf;
+	{{ if .Env.ENABLE_TURN | default "0" | toBool }}
+	include /config/nginx/turn.conf;
+	{{ end }}
 }
 {{ end }}

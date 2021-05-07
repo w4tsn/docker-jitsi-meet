@@ -63,6 +63,9 @@ if [[ $DISABLE_HTTPS -ne 1 ]]; then
     fi
 fi
 
+# install and activate TURN module
+tpl /defaults/turn.conf > /etc/nginx/modules/turn
+
 # copy config files
 tpl /defaults/nginx.conf > /config/nginx/nginx.conf
 
